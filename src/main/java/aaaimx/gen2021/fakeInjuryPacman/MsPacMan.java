@@ -34,7 +34,7 @@ public final class MsPacMan extends PacmanController {
 	//Navigation info
 	private MOVE[] pcMoves;
 	
-    
+    //Oswaldo was here
     private void getEdibleGhostsInfo(Game game) {
     	ArrayList<GHOST> ghosts = new ArrayList<GHOST>();
     	ArrayList<Integer> locations = new ArrayList<Integer>();
