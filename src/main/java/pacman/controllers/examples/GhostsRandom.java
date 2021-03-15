@@ -24,6 +24,6 @@ public final class GhostsRandom extends GhostController {
                 moves.put(ghostType, allMoves[rnd.nextInt(allMoves.length)]);
             }
         }
-        return moves;
+        return moves;	
     }
 }

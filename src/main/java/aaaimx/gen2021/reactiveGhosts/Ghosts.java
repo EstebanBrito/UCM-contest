@@ -1,5 +1,96 @@
 package aaaimx.gen2021.reactiveGhosts;
 
-public class Ghosts {
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
+import pacman.controllers.GhostController;
+import pacman.game.Constants.GHOST;
+import pacman.game.Constants.MOVE;
+import pacman.game.Game;
+
+public final class Ghosts extends GhostController{
+	int close = 2;
+	int pillClose = 2;
+	Random rnd = new Random();
+	EnumMap<GHOST,MOVE> moves=new EnumMap<GHOST,MOVE>(GHOST.class);
+	
+	public EnumMap<GHOST, MOVE> getMove(Game game, long timeDue) {
+		for (GHOST ghost : GHOST.values()) {
+			if(game.doesGhostRequireAction(ghost)) {
+				MOVE[] possibilitiesMoves= game.getPossibleMoves(game.getGhostCurrentNodeIndex(ghost),game.getGhostLastMoveMade(ghost));
+				if (game.getGhostEdibleTime(ghost)>0||closeToPower(game)) {
+					// meth for runway
+					moves.put(ghost, getPersureMove(game, ghost, possibilitiesMoves));
+				}else {
+					// meth for persure
+					//moves.put(ghost, getPersureMove(game, ghost, possibilitiesMoves));
+					moves.put(ghost, getRunAwayeMove(game, ghost, possibilitiesMoves));
+				}
+			}
+		}
+		
+		return moves;
+	}
+
+	private boolean closeToPower(Game game) {
+		int [] powerPills = game.getPowerPillIndices();
+		for(int i : powerPills) {
+			if (game.isPowerPillStillAvailable(i) && (game.getShortestPathDistance(i, game.getPacmanCurrentNodeIndex())<pillClose)){
+				return true;
+			}
+		}
+		return false;
+		
+	}
+	private MOVE getPersureMove(Game game, GHOST ghost, MOVE[] possibilitiesMoves) {
+		Map <MOVE, Integer> allMovesValues = new HashMap <MOVE,Integer>(possibilitiesMoves.length);
+		int ghLocation = game.getGhostCurrentNodeIndex(ghost);
+		int pcLocation = game.getPacmanCurrentNodeIndex();
+		for (MOVE move : possibilitiesMoves) {
+			int neighbour=game.getNeighbour(ghLocation,move);
+			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour);
+			if (distanceValue > 0) {
+				allMovesValues.put(move, distanceValue);
+			}
+		}
+		// best move
+		
+		int bestDistance = 0;
+		MOVE bestMove = null;
+		for (MOVE move : possibilitiesMoves) {
+			if (allMovesValues.get(move)>bestDistance) {
+				bestDistance=allMovesValues.get(move);
+				bestMove=move;
+			}
+		}
+		
+		return bestMove;
+	}
+	private MOVE getRunAwayeMove(Game game, GHOST ghost, MOVE[] possibilitiesMoves) {
+		Map <MOVE, Integer> allMovesValues = new HashMap <MOVE,Integer>(possibilitiesMoves.length);
+		int ghLocation = game.getGhostCurrentNodeIndex(ghost);
+		int pcLocation = game.getPacmanCurrentNodeIndex();
+		for (MOVE move : possibilitiesMoves) {
+			int neighbour=game.getNeighbour(ghLocation,move);
+			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour);
+			if (distanceValue > 0) {
+				allMovesValues.put(move, distanceValue);
+			}
+		}
+		// best move
+		
+		int bestDistance = Integer.MAX_VALUE;
+		MOVE bestMove = null;
+		for (MOVE move : possibilitiesMoves) {
+			if (allMovesValues.get(move)<bestDistance) {
+				bestDistance=allMovesValues.get(move);
+				bestMove=move;
+			}
+		}
+		
+		return bestMove;
+	}
+	
 }
