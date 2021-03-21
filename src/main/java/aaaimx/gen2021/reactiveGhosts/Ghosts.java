@@ -13,7 +13,7 @@ import pacman.game.Game;
 
 public final class Ghosts extends GhostController{
 	int close = 3;
-	int pillClose = 10;
+	int pillClose = 15;
 	Random rnd = new Random();
 	EnumMap<GHOST,MOVE> moves=new EnumMap<GHOST,MOVE>(GHOST.class);
 	
@@ -37,39 +37,27 @@ public final class Ghosts extends GhostController{
 	}
 
 	private boolean closeToPower(Game game) {
-		int [] powerPills = game.getPowerPillIndices();
+		int [] powerPills = game.getActivePowerPillsIndices();
 		for(int i : powerPills) {
-			if (game.isPowerPillStillAvailable(i) && (game.getShortestPathDistance(i, game.getPacmanCurrentNodeIndex())<pillClose)){
+			if (game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(),i,game.getPacmanLastMoveMade())<=12){
+				System.out.println("si esta cerca");
 				return true;
 			}
 		}
 		return false;
 		
 	}
+	
 	private MOVE getRunAwayeMove(Game game, GHOST ghost, MOVE[] possibilitiesMoves) {
 		Map <MOVE, Integer> allMovesValues = new HashMap <MOVE,Integer>(possibilitiesMoves.length);
 		int ghLocation = game.getGhostCurrentNodeIndex(ghost);
 		int pcLocation = game.getPacmanCurrentNodeIndex();
 		for (MOVE move : possibilitiesMoves) {
 			int neighbour=game.getNeighbour(ghLocation,move);
-			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour);
-			for (GHOST otherGhost: GHOST.values()) {				
-				int oGhLocation = game.getGhostCurrentNodeIndex(otherGhost);
-				int distancePcGh = game.getShortestPathDistance(pcLocation, oGhLocation);
-				if (ghost != otherGhost && distancePcGh>0) {					
-					int[] path= game.getShortestPath(pcLocation, oGhLocation); 
-					path= game.getShortestPath(pcLocation, oGhLocation);
-					for (int node : path) {
-						if (node == neighbour && game.isGhostEdible(otherGhost)) {
-							distanceValue +=50;
-						}else if (node == neighbour){
-							distanceValue +=90;
-						}
-					}
-					allMovesValues.put(move, distanceValue);
-				}
-			}
+			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour,game.getGhostLastMoveMade(ghost));
+			allMovesValues.put(move, distanceValue);
 		}
+		
 		// best move
 		
 			int bestDistance = Integer.MIN_VALUE;
@@ -92,25 +80,10 @@ public final class Ghosts extends GhostController{
 		int pcLocation = game.getPacmanCurrentNodeIndex();
 		for (MOVE move : possibilitiesMoves) {
 			int neighbour=game.getNeighbour(ghLocation,move);
-			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour);
-			for (GHOST otherGhost: GHOST.values()) {	
-				int oGhLocation = game.getGhostCurrentNodeIndex(otherGhost);
-				int distancePcGh = game.getShortestPathDistance(pcLocation, oGhLocation);
-				if (ghost != otherGhost && distancePcGh>0) {					
-					int[] path= game.getShortestPath(pcLocation, oGhLocation); 
-					path= game.getShortestPath(pcLocation, oGhLocation);
-					for (int node : path) {
-						if (node == neighbour && game.isGhostEdible(otherGhost)) {
-							distanceValue -=50;
-						}else if (node == neighbour){
-							distanceValue -=90;
-						}
-					}
-					allMovesValues.put(move, distanceValue);
-				}
-			}
-			
-		}
+			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour,game.getGhostLastMoveMade(ghost));
+			allMovesValues.put(move, distanceValue);
+		}			
+		
 		// best move
 		
 			int bestDistance = Integer.MAX_VALUE;
