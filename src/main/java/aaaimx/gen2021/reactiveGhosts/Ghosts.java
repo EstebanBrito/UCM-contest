@@ -54,7 +54,7 @@ public final class Ghosts extends GhostController{
 		int pcLocation = game.getPacmanCurrentNodeIndex();
 		for (MOVE move : possibilitiesMoves) {
 			int neighbour=game.getNeighbour(ghLocation,move);
-			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour,game.getGhostLastMoveMade(ghost));
+			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour,game.getPacmanLastMoveMade());
 			allMovesValues.put(move, distanceValue);
 		}
 		
@@ -80,7 +80,7 @@ public final class Ghosts extends GhostController{
 		int pcLocation = game.getPacmanCurrentNodeIndex();
 		for (MOVE move : possibilitiesMoves) {
 			int neighbour=game.getNeighbour(ghLocation,move);
-			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour,game.getGhostLastMoveMade(ghost));
+			int distanceValue = game.getShortestPathDistance(pcLocation, neighbour,game.getPacmanLastMoveMade());
 			allMovesValues.put(move, distanceValue);
 		}			
 		
