@@ -12,9 +12,7 @@ import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 
 public final class Ghosts extends GhostController{
-	int close = 3;
-	int pillClose = 15;
-	Random rnd = new Random();
+	
 	EnumMap<GHOST,MOVE> moves=new EnumMap<GHOST,MOVE>(GHOST.class);
 	
 	public EnumMap<GHOST, MOVE> getMove(Game game, long timeDue) {
@@ -23,7 +21,11 @@ public final class Ghosts extends GhostController{
 				MOVE[] possibilitiesMoves= game.getPossibleMoves(game.getGhostCurrentNodeIndex(ghost),game.getGhostLastMoveMade(ghost));
 				if (game.getGhostEdibleTime(ghost)>0||closeToPower(game)) {
 					// meth for runway
+					/*if (closeToPower(game)) {
+						
+					}else {*/
 					moves.put(ghost, getRunAwayeMove(game, ghost, possibilitiesMoves));
+					//}
 					//moves.put(ghost, getPersureMove(game, ghost, possibilitiesMoves));
 				}else {
 					// meth for persure
@@ -39,8 +41,9 @@ public final class Ghosts extends GhostController{
 	private boolean closeToPower(Game game) {
 		int [] powerPills = game.getActivePowerPillsIndices();
 		for(int i : powerPills) {
-			if (game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(),i,game.getPacmanLastMoveMade())<=12){
-				System.out.println("si esta cerca");
+			int n = game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(),i,game.getPacmanLastMoveMade());
+			if (n<=60){
+				//System.out.println("si esta cerca: "+n);
 				return true;
 			}
 		}
@@ -69,7 +72,7 @@ public final class Ghosts extends GhostController{
 						bestMove=move;
 					}
 			}
-			
+			//System.out.println(ghost.name()+" : "+bestMove+" RunAway");
 			return bestMove;
 		
 		
@@ -96,6 +99,7 @@ public final class Ghosts extends GhostController{
 						bestMove=move;
 					}
 			} 
+			//System.out.println(ghost.name()+" : "+bestMove+" Persure");
 			return bestMove;
 		
 
